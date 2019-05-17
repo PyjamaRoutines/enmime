@@ -42,6 +42,27 @@ func (md *markdown) Println(args ...interface{}) {
 	fmt.Fprintln(md, args...)
 }
 
+
+// EnvelopeToMarkdown renders the contents of an enmime.Envelope in Markdown format. Used by
+// mime-dump and mime-extractor commands.
+func EnvelopeToMarkdownBody(w io.Writer, e *enmime.Envelope, name string) error {
+	md := &markdown{bufio.NewWriter(w)}
+	md.H2("Body Text")
+	md.Println(e.Text)
+	md.Println()
+
+	if len(e.Errors) > 0 {
+		md.Println()
+		md.H2("Errors")
+		for _, perr := range e.Errors {
+			md.Println("-", perr)
+		}
+	}
+
+	return md.Flush()
+}
+
+
 // EnvelopeToMarkdown renders the contents of an enmime.Envelope in Markdown format. Used by
 // mime-dump and mime-extractor commands.
 func EnvelopeToMarkdown(w io.Writer, e *enmime.Envelope, name string) error {
